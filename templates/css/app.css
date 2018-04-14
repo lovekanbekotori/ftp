@@ -1,0 +1,124 @@
+body {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin: 10px !important;
+  height: 620px !important;
+  background: none !important;
+  -webkit-user-select: none;
+  user-select: none;
+  color: #020202; }
+
+#window {
+  box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.1);
+  background: white; }
+
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden; }
+
+header {
+  height: 60px;
+  background: #0097EA;
+  color: white; }
+  header .logo {
+    float: left;
+    margin-left: 30px;
+    width: 150px;
+    height: 60px;
+    background: url("../img/logo.png") no-repeat center; }
+  header .control {
+    float: right;
+    margin-right: 20px; }
+    header .control span {
+      display: inline-block;
+      width: 35px;
+      height: 60px;
+      cursor: pointer;
+      font-size: 18px;
+      text-align: center;
+      line-height: 60px;
+      background: url("../img/jian.png") no-repeat center; }
+      header .control span:hover {
+        background: url("../img/jian_on.png") no-repeat center; }
+    header .control span:nth-of-type(2) {
+      background: url("../img/jia.png") no-repeat center; }
+      header .control span:nth-of-type(2):hover {
+        background: url("../img/jia_on.png") no-repeat center; }
+
+main {
+  width: 100%;
+  height: 540px; }
+  main .side-control {
+    float: left;
+    width: 140px;
+    height: 100%;
+    background: white; }
+    main .side-control ul {
+      padding: 0;
+      padding-top: 20px; }
+      main .side-control ul li {
+        padding-left: 20px;
+        height: 40px;
+        font-size: 14px;
+        line-height: 40px;
+        border-left: 3px solid transparent;
+        background: white;
+        -webkit-transition: border 0.4s;
+        list-style: none;
+        cursor: pointer; }
+        main .side-control ul li:hover, main .side-control ul li.on {
+          border-left: 3px solid #0097EA;
+          background: rgba(0, 151, 234, 0.1); }
+        main .side-control ul li span {
+          display: inline-block;
+          margin-top: -3px;
+          width: 20px;
+          height: 15px;
+          padding-right: 15px;
+          vertical-align: middle;
+          font-size: 18px;
+          background-repeat: no-repeat;
+          background-position: center; }
+  main .wrapper {
+    padding: 20px;
+    margin-left: 140px;
+    min-height: 500px; }
+    main .wrapper table thead {
+      color: #777; }
+      main .wrapper table thead tr th {
+        text-align: center;
+        font-weight: normal; }
+    main .wrapper table tbody {
+      text-align: center; }
+      main .wrapper table tbody .list-leave, main .wrapper table tbody .list-enter-to {
+        opacity: 1; }
+      main .wrapper table tbody .list-leave-to, main .wrapper table tbody .list-enter {
+        opacity: 0; }
+      main .wrapper table tbody .list-leave-active, main .wrapper table tbody .list-enter-active {
+        -webkit-transition: opacity 0.5s; }
+      main .wrapper table tbody .list-move {
+        -webkit-transition: opacity 0.5s; }
+      main .wrapper table tbody tr {
+        color: #020202; }
+      main .wrapper table tbody td.error {
+        color: tomato !important; }
+      main .wrapper table tbody td:nth-last-child(2) {
+        color: #00A4FF; }
+    main .wrapper .btn-add {
+      margin-right: 10px !important;
+      background: #00A4FF;
+      color: white;
+      -webkit-transition: all 0.4s; }
+      main .wrapper .btn-add:hover {
+        background: #0097EA; }
+
+.layui-form {
+  display: none;
+  margin-top: 10px;
+  padding: 20px; }
+
+/*# sourceMappingURL=app.css.map */

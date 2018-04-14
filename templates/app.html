@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>织梦后台批量管理-By：hutaotao</title>
+  <link rel="stylesheet" href="./css/app.css">
+  <link rel="stylesheet" href="./layui/css/layui.css">
+  <script src="./vue/vue.js"></script>
+  <script src="./layui/jquery.min.js"></script>
+</head>
+<body>
+  <div id="window">
+    <header onmousedown="msg('move')">
+      <div class="logo"></div>
+      <div class="control">
+        <span onmousedown="msg('min')"></span>
+        <span onmousedown="msg('close')"></span>
+      </div>
+    </header>
+    <main class="clearfix">
+      <div class="side-control">
+        <ul>
+          <li :class="{ on: view == 'account' ? true : false }" @click="view = 'account'">
+            <p><span style="background-image:url('./img/menu_admin.png');"></span>账号登录</p>
+          </li>
+          <li :class="{ on: view == 'file-update' ? true : false }" @click="view = 'file-update'">
+            <p><span style="background-image:url('./img/menu_folder.png');"></span>文件上传</p>
+          </li>
+          <li :class="{ on: view == 'set' ? true : false }" @click="view = 'set'">
+            <p><span style="background-image:url('./img/menu_set.png');"></span>软件配置</p>
+          </li>
+          <li :class="{ on: view == 'help' ? true : false }" @click="view = 'help'">
+            <p><span style="background-image:url('./img/menu_help.png');"></span>使用帮助</p>
+          </li>
+        </ul>
+      </div>
+      <div class="wrapper">
+        <keep-alive>
+          <component :thread="thread" :path="path" :is="view" :file="file" :account="account" @removea="removea" @removef="removef">
+            
+          </component>
+        </keep-alive>
+      </div>
+    </main>
+  </div>
+
+  <!-- 管理员账号密码 -->
+  <script type="text/x-template" id="account">
+    <div class="account">
+      <div class="btn-add btn layui-btn layui-btn-normal" @click="addAccount">添加FTP</div>
+      <v-table @remove="remove" :isLogin="true" :tableData="account"></v-table>
+    </div>
+  </script>
+
+  <!-- 文件列表 -->
+  <script type="text/x-template" id="file-update">
+    <div class="file-update">
+      <div class="layui-btn-group">
+        <button onclick="e_start_update()" class="btn-add btn layui-btn layui-btn-normal">开始上传</button>
+        <button onclick="e_selector_folder()" class="btn-add btn layui-btn layui-btn-normal">选择文件夹</button>
+      </div>
+      <v-table @remove="remove" :tableData="file"></v-table>
+    </div>
+  </script>
+
+
+  <!-- 配置信息 -->
+  <script type="text/x-template" id="set">
+    <div class="layui-form-pane">
+      <div style="margin-bottom: 15px;">
+        <label class="layui-form-label">多账号上传</label>
+        <div class="layui-input-block">
+          <input v-model="thread" type="text" name="title" required  lay-verify="required" placeholder="文件少的话可以输入大点，最多为 3" autocomplete="off" class="layui-input" value="1">
+        </div>
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label class="layui-form-label">服务器目录</label>
+        <div class="layui-input-block">
+          <input v-model="path" type="text" name="title" required  lay-verify="required" placeholder="上传到服务器的目录(目录使用 / 隔开)" autocomplete="off" class="layui-input">
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <!-- 帮助 -->
+  <script type="text/x-template" id="help">
+    <div>
+      <h3>关于账号</h3>
+      <pre class="layui-code" lay-title="" lay-height="" lay-skin="" lay-encode="">点击添加FTP账号，添加的账号会默认保存在软件根目录下 admin.ini 文件里
+FTP 端口一般默认为 21
+未登录的账号不会进行上传操作</pre>
+      <h3>上传操作</h3>
+      <pre class="layui-code" lay-title="" lay-height="" lay-skin="" lay-encode="">上传之前先在设置进行服务器目录设置
+点击上方开始上传按钮为上传所有文件夹
+点击文件夹/文件后面的上传按钮只上传当前的文件或文件夹</pre>
+      <h3>软件设置</h3>
+      <pre class="layui-code" lay-title="" lay-height="" lay-skin="" lay-encode="">多账号上传：
+  同时开启几条上传线程，文件太多的话建议填写 1，最大填写 3
+服务器目录：
+  要上传到服务器的那个目录中，使用 / 分隔文件夹
+</pre>
+    <a onclick="e_open_qq()" style="float: right;" class="layui-btn layui-btn-radius layui-btn-normal">还有问题？</a>
+    </div>
+  </script>
+
+  <!-- 表格组件 -->
+  <script type="text/x-template" id="v-table">
+    <div class="table-wrapper" style="height: 450px; overflow-y: auto;">
+      <table class="layui-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th v-for="(item, index) in tableData.key" :key="index" >{{ item }}</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <transition-group name="list" tag="tbody" mode="out-in">
+          <tr v-for="(item, index) in tableData.data" :key="item">
+            <th scope="row">{{ index + 1 }}</th>
+            <td v-for="(v, index) in item" :key="v" :class="{error: v == '失败'? true : false}">{{ v | hidden }}</td>
+            <td>
+              <button :class="{'layui-btn-disabled': item.state == '已登录' ? true : false }" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger" @click="remove(index)">删除</button>
+              <button :class="{'layui-btn-disabled': item.state == '已登录' ? true : false }" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal" @click="login(index)">{{ isLogin ? '登录' : '上传' }}</button>
+            </td>
+          </tr>
+        </transition-group>
+      </table>
+    </div>
+  </script>
+
+  <!-- 增加管理员弹窗 -->
+  <div id="layer-add-account" class="layui-form layui-form-pane">
+    <div class="layui-form-item">
+      <label class="layui-form-label">FTP地址</label>
+      <div class="layui-input-block">
+        <input type="text" name="title" required="" lay-verify="required" placeholder="输入FTP地址" autocomplete="off" class="layui-input addres">
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">FTP账号</label>
+      <div class="layui-input-block">
+        <input type="text" required="" lay-verify="required" placeholder="输入FTP账号" autocomplete="off" class="layui-input name">
+      </div>
+    </div>
+
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">FTP密码</label>
+      <div class="layui-input-block">
+        <input type="password" name="title" required="" lay-verify="required" placeholder="输入FTP密码" autocomplete="off" class="layui-input password">
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">FTP端口</label>
+      <div class="layui-input-block">
+        <input type="text" name="title" required="" lay-verify="required" placeholder="输入FTP端口" autocomplete="off" class="layui-input port">
+      </div>
+    </div>
+  </div>
+
+  <!-- 验证码窗口 -->
+  <div id="layer-code" class="layui-form layui-form-pane">
+    <div class="layui-form-item">
+      <label style="cursor: pointer;" class="layui-form-label" onmousedown="e_img_code_refresh()">
+        <img class="code-img" style="display: block; width: 100%; height: 100%;" src="" alt="">
+      </label>
+      <div class="layui-input-block">
+        <input type="text" name="title" required="" lay-verify="required" placeholder="输入验证码(大小写无所谓)" autocomplete="off" class="layui-input code">
+      </div>
+    </div>
+  </div>
+  <script src="./layui/layui.all.js"></script>
+
+  <script>
+    var layer = layui.layer;
+    var form = layui.form;
+
+    // 过滤器
+    Vue.filter('hidden', function (value, len) {
+      len = len || 20;
+      if (typeof value != 'string') return value;
+      value = '..' + value.substr( value.len - 20 | 0, 20 );
+      return value;
+    });
+
+    // 帮助面板
+    var help = Vue.component('help', {
+      template: '#help'
+    });
+
+    // 设置面板
+    var set = Vue.component('set', {
+      template: '#set',
+      props: {
+        path: {
+          type: String
+        },
+        thread: {
+          type: Number
+        }
+      },
+      watch: {
+        path: function (v) {
+          e_change_path(v);
+        },
+        thread: function (v) {
+          e_change_thread(v);
+        }
+      }
+    });
+
+    // 表格组件
+    var vue_table = Vue.component('v-table', {
+      template: '#v-table',
+      props: {
+        tableData: {
+          type: Object
+        },
+        isLogin: {
+          type: Boolean
+        }
+      },
+      methods: {
+        remove: function (index) {
+          this.$emit('remove', index);
+        },
+        login: function (index) {
+          if (this.isLogin) {
+            e_login(index + 1);
+          } else {
+            e_one_file_update(index + 1);
+          }
+        }
+      }
+    });
+
+    // 文件列表
+    var vue_file = Vue.component('file-update', {
+      template: '#file-update',
+      props: {
+        file: {
+          type: Object
+        }
+      },
+      components: {
+        "v-table": vue_table
+      },
+      methods: {
+        remove: function (index) {
+          this.$emit('removef', index);
+          e_remove_file(index + 1);
+        }
+      }
+    });
+
+    // 管理员账号密码组件
+    var vue_account = Vue.component('account', {
+      template: '#account',
+      props: {
+        account: {
+          type: Object
+        }
+      },
+      data: function () {
+        return {
+        };
+      },
+      methods: {
+        remove: function (index) {
+          console.log(index);
+          this.$emit('removea', index);
+          e_remove_account(index + 1);
+        },
+        addAccount: function addAccount () {
+          layer.open({
+            type: 1,
+            title: '添加管理员账号',
+            content: $('#layer-add-account'),
+            area: '500px',
+            shade: 0,
+            btn: ['确认', '取消'],
+            btn1: function (index, layero) {
+
+              // 增加管理员账号
+              var addres = layero[0].getElementsByClassName('addres')[0].value;
+              var name = layero[0].getElementsByClassName('name')[0].value;
+              var password = layero[0].getElementsByClassName('password')[0].value;
+              var port = layero[0].getElementsByClassName('port')[0].value;
+
+              if (!addres || !name || !password || !port)  {
+                layer.alert('参数不完整', {icon: 5,shade: 0});
+                return;
+              }
+
+
+              app.account.data.push({
+                domain: addres,
+                name: name,
+                password: password,
+                port: port,
+                state: '未登录'
+              });
+
+              layer.close(index);
+              layero[0].style.display = 'none';
+
+              // 调用软件接口
+              e_add_account(addres, name, password, port);
+            }
+          });     
+            
+        }
+      },
+      components: {
+        "v-table": vue_table
+      }
+    });
+
+
+    var app = new Vue({
+      el: '#window',
+      data: {
+        view: 'account',
+        account: {
+          key: ['FTP服务器地址', '用户名', '密码', '端口', '登录状态'],
+          data: []
+        },
+        file: {
+          key: ['文件名', '文件地址', '属性', '上传状态'],
+          data: []
+        },
+        path: '',
+        thread: 1
+      },
+      methods: {
+        removea: function (index) {
+          console.log(index);
+          this.account.data.splice(index, 1);
+        },
+        removef: function (index) {
+          console.log(index);
+          this.file.data.splice(index, 1);
+        }
+      }
+    });
+  </script>
+  <script src="./js/client_event.js"></script>
+</body>
+</html>

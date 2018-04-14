@@ -1,0 +1,24 @@
+body {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin: 10px !important;
+  height: 620px !important;
+  background: none !important;
+  -webkit-user-select:none;
+  user-select:none;
+  color: #020202;
+}
+
+#window {
+  box-shadow: 0 0 5px 5px rgba(0, 0, 0, .1); 
+  background: white;
+}
+
+.clearfix:after{
+  content:".";
+  display:block;
+  height:0;
+  clear:both;
+  visibility:hidden
+}

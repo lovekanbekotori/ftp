@@ -1,0 +1,109 @@
+main {
+  width: 100%;
+  height: 540px;
+
+  .side-control {
+    float: left;
+    width: 140px;
+    height: 100%;
+    background: white;
+    ul {
+      padding: 0;
+      padding-top: 20px;
+
+      li {
+        padding-left: 20px;
+        height: 40px;
+        font-size: 14px;
+        line-height: 40px;
+        border-left: 3px solid transparent;
+        background: white;
+        -webkit-transition: border 0.4s;
+        list-style: none;
+        cursor: pointer;
+        
+        &:hover,&.on {
+          border-left: 3px solid $main-color;
+          background: rgba($main-color, .1);
+        }
+        span {
+          display: inline-block;
+          margin-top: -3px;
+          width: 20px;
+          height: 15px;
+          padding-right: 15px;
+          vertical-align: middle;
+          font-size: 18px;
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+      }
+    }
+  }
+
+  .wrapper {
+    padding: 20px;
+    margin-left: 140px;
+    min-height: 500px;
+    
+    table {
+      thead {
+        color: #777;
+        tr {
+          th {
+            text-align: center;
+            font-weight: normal;
+          }
+        }
+      }
+      tbody {
+        text-align: center;
+
+        .list-leave, .list-enter-to {
+          opacity: 1;
+        }
+
+        .list-leave-to, .list-enter {
+          opacity: 0;
+        }
+
+        .list-leave-active,.list-enter-active {
+          -webkit-transition: opacity 0.5s;
+        }
+        .list-move {
+          -webkit-transition: opacity 0.5s;
+        }
+        tr {
+          color: #020202;
+        }
+
+        td.error {
+          color: tomato !important;
+        }
+
+        td:nth-last-child(2) {
+          color: #00A4FF;
+        }
+      }
+    }
+
+    .btn-add {
+      margin-right: 10px !important;
+      background: #00A4FF;
+      color: white;
+      -webkit-transition: all 0.4s;
+
+      &:hover {
+        background: #0097EA;
+      }
+    }
+  }
+}
+
+
+
+.layui-form {
+  display: none;
+  margin-top: 10px;
+  padding: 20px;
+}
